@@ -5,11 +5,11 @@ import java.io.File
 import anduin.protocompat.check._
 import anduin.protocompat.tree.ProtoTree
 
-final class ConsoleProtoReport(
+final class ConsoleProtoReporter(
   showFullPath: Boolean
-) extends ProtoReport {
+) extends ProtoReporter {
 
-  import ConsoleProtoReport._
+  import ConsoleProtoReporter._
 
   private[this] def protoPath(
     name: String,
@@ -124,7 +124,7 @@ final class ConsoleProtoReport(
   }
 }
 
-object ConsoleProtoReport {
+object ConsoleProtoReporter {
 
   private val NewLine = "\n"
 

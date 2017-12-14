@@ -4,7 +4,7 @@ import com.google.protobuf.DescriptorProtos.FieldDescriptorProto
 
 import anduin.protocompat.check.ProtoCheckResult
 
-trait ProtoReport {
+trait ProtoReporter {
 
   protected def fieldType(tpe: FieldDescriptorProto.Type): String = {
     tpe match {
