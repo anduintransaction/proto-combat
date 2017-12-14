@@ -187,6 +187,16 @@ private[check] object ProtoCheckInternals {
               )
             )
           }
+
+          if (newField.getName != oldField.getName) {
+            incompats += incompat(
+              FieldRenamed(
+                newField.getNumber,
+                newField.getName,
+                oldField.getName
+              )
+            )
+          }
       }
 
       incompats.result()
