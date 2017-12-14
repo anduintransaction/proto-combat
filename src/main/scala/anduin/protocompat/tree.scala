@@ -27,26 +27,50 @@ object tree {
       fileProto.getName -> ProtoFile(fileProto)
     }.toMap
 
-    lazy val flattenMessages: Map[String, (ProtoMessage, ProtoFile)] =
+    lazy val flattenMessagesAndFile: Map[String, (ProtoMessage, ProtoFile)] =
       files.values.toVector.foldMap { file =>
         file.flattenMessages.mapValues(_ -> file)
       }
 
-    def findMessage(canonicalName: String): Option[ProtoMessage] = {
-      flattenMessages.collectFirst { case (name, (message, _)) if name == canonicalName => message }
+    def findMessageAndFile(canonicalName: String): Option[(ProtoMessage, ProtoFile)] = {
+      flattenMessagesAndFile.collectFirst {
+        case (name, (message, file)) if name == canonicalName => (message, file)
+      }
     }
 
-    lazy val flattenEnums: Map[String, (ProtoEnum, ProtoFile)] = files.values.toVector
+    def findMessage(canonicalName: String): Option[ProtoMessage] = {
+      findMessageAndFile(canonicalName).map { case (message, _) => message }
+    }
+
+    lazy val flattenEnumsAndFile: Map[String, (ProtoEnum, ProtoFile)] = files.values.toVector
       .foldMap { file =>
         file.flattenEnums.mapValues(_ -> file)
       }
 
+    def findEnumAndFile(canonicalName: String): Option[(ProtoEnum, ProtoFile)] = {
+      flattenEnumsAndFile.collectFirst {
+        case (name, (enum, file)) if name == canonicalName => (enum, file)
+      }
+    }
+
     def findEnum(canonicalName: String): Option[ProtoEnum] = {
-      flattenEnums.collectFirst { case (name, (enum, _)) if name == canonicalName => enum }
+      findEnumAndFile(canonicalName).map { case (enum, file) => enum }
+    }
+
+    def findProtoAndFile(
+      canonicalName: String
+    ): Option[(Either[ProtoMessage, ProtoEnum], ProtoFile)] = {
+      findMessageAndFile(canonicalName)
+        .map {
+          case (message, file) => (Left(message), file)
+        }
+        .orElse(
+          findEnumAndFile(canonicalName).map { case (enum, file) => (Right(enum), file) }
+        )
     }
 
     def findProto(canonicalName: String): Option[Either[ProtoMessage, ProtoEnum]] = {
-      findMessage(canonicalName).map(Left(_)).orElse(findEnum(canonicalName).map(Right(_)))
+      findProtoAndFile(canonicalName).map { case (messageOrEnum, _) => messageOrEnum }
     }
   }
 
