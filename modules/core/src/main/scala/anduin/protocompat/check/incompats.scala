@@ -25,14 +25,14 @@ final case class FieldTypeConflicted(
 
 final case class ScalaFieldTypeConflicted(
   tagNumber: Int,
-  oldFieldName: String,
-  oldScalaFieldType: String,
   newFieldName: String,
-  newScalaFieldType: String
+  newScalaFieldType: String,
+  oldFieldName: String,
+  oldScalaFieldType: String
 ) extends ProtoIncompatReason
 
 final case class FieldRenamed(
   tagNumber: Int,
-  oldFieldName: String,
-  newFieldName: String
+  newFieldName: String,
+  oldFieldName: String
 ) extends ProtoIncompatReason
