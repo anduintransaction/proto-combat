@@ -1,8 +1,22 @@
+import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
+import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
+
 scalaVersion in ThisBuild := "2.12.4"
 
 lazy val `proto-compat-directives` = crossProject
   .crossType(CrossType.Pure)
   .in(file("modules") / "directives")
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.trueaccord.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
+    ),
+    PB.protoSources in Compile := Seq(
+      (baseDirectory in Compile).value.getParentFile / "src" / "main" / "protobuf"
+    ),
+    PB.targets in Compile := Seq(
+      protocbridge.gens.java -> (sourceManaged in Compile).value
+    )
+  )
 
 lazy val `proto-compat-directivesJVM` = `proto-compat-directives`.jvm
 lazy val `proto-compat-directivesJS` = `proto-compat-directives`.js

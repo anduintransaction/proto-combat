@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package compat;
+
+import "google/protobuf/descriptor.proto";
+
+option java_package = "anduin.protocompat";
+
+message FieldOptions {
+  string renamed_from = 1;
+}
+
+extend google.protobuf.FieldOptions {
+  // Sorry, not officially registered yet.
+  FieldOptions field = 1808;
+}

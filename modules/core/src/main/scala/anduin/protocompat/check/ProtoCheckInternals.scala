@@ -3,12 +3,14 @@ package anduin.protocompat.check
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-import com.google.protobuf.DescriptorProtos.{DescriptorProto, FieldDescriptorProto, FieldOptions}
-
-import anduin.protocompat.tree.{ProtoEnum, ProtoMessage, ProtoTree}
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.{Type => FieldType}
+import com.google.protobuf.DescriptorProtos.{DescriptorProto, FieldDescriptorProto, FieldOptions}
 import com.google.protobuf.ExtensionRegistry
+import com.google.protobuf.GeneratedMessage.GeneratedExtension
 import com.trueaccord.scalapb.Scalapb
+
+import anduin.protocompat.Compat
+import anduin.protocompat.tree.{ProtoEnum, ProtoMessage, ProtoTree}
 
 private[check] object ProtoCheckInternals {
 
@@ -41,6 +43,7 @@ private[check] object ProtoCheckInternals {
 
   private val extensionRegistry = ExtensionRegistry.newInstance()
   Scalapb.registerAllExtensions(extensionRegistry)
+  Compat.registerAllExtensions(extensionRegistry)
 
   private def checkEnum(
     newTree: ProtoTree,
@@ -189,13 +192,20 @@ private[check] object ProtoCheckInternals {
           }
 
           if (newField.getName != oldField.getName) {
-            incompats += incompat(
-              FieldRenamed(
-                newField.getNumber,
-                newField.getName,
-                oldField.getName
+            val fieldOptions = FieldOptions
+              .parseFrom(newField.getOptions.toByteArray, extensionRegistry)
+              .getExtension(Compat.field: GeneratedExtension[FieldOptions, Compat.FieldOptions])
+
+            // Field renamed without any suppression
+            if (fieldOptions.getRenamedFrom != oldField.getName) {
+              incompats += incompat(
+                FieldRenamed(
+                  newField.getNumber,
+                  newField.getName,
+                  oldField.getName
+                )
               )
-            )
+            }
           }
       }
 
