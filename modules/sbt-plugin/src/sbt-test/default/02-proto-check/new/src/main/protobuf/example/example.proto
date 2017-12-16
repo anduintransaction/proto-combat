@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package example;
+
+import "scalapb/scalapb.proto";
+
+message Person {
+  string name = 1 [(scalapb.field).scala_name = "fullName"];
+  Info info = 3;
+}
+
+message Info {
+  string nid = 1;
+  string sid = 2 [(scalapb.field).type = "scala.BigInt"];
+  string iid = 3;
+}

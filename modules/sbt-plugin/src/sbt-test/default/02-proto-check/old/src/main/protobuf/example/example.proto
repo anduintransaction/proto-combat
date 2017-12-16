@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package example;
+
+import "scalapb/scalapb.proto";
+
+message Person {
+  string name = 1 [(scalapb.field).scala_name = "fullName"];
+  int32 age = 2;
+  Info info = 3;
+}
+
+message Info {
+  int32 nid = 1;
+  string sid = 2 [(scalapb.field).type = "java.math.BigInteger"];
+  string insurance_id = 3;
+}
