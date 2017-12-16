@@ -1,7 +1,12 @@
 import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
 
-scalaVersion in ThisBuild := "2.12.4"
+inThisBuild(
+  Seq(
+    organization := "com.anduintransact",
+    scalaVersion := "2.12.4"
+  )
+)
 
 lazy val `proto-compat-directives` = crossProject
   .crossType(CrossType.Pure)
@@ -32,15 +37,34 @@ lazy val `proto-compat-core` = project
       "com.github.os72" % "protoc-jar" % "3.5.0",
       "com.trueaccord.scalapb" %% "scalapb-runtime" % "0.6.7" excludeAll (
         "com.google.protobuf" % "protobuf-java"
-        )
+      )
     ),
-    scalacOptions += "-Ypartial-unification",
-    fork := true
+    scalacOptions += "-Ypartial-unification"
   )
 
 lazy val `sbt-proto-compat` = project
   .in(file("modules") / "sbt-plugin")
   .dependsOn(`proto-compat-core`)
   .settings(
-    sbtPlugin := true
+    sbtPlugin := true,
+    libraryDependencies ++= Seq(
+      Defaults.sbtPluginExtra(
+        "com.thesamet" % "sbt-protoc" % "0.99.12",
+        (sbtBinaryVersion in pluginCrossBuild).value,
+        (scalaBinaryVersion in pluginCrossBuild).value
+      )
+    ),
+    publishLocal := publishLocal
+      .dependsOn(
+        // Hacky, why does this project have to know all transitive dependencies?
+        publishLocal in `proto-compat-directivesJVM`,
+        publishLocal in `proto-compat-core`
+      )
+      .value,
+    scriptedLaunchOpts ++= Seq(
+      "-Xmx1024M",
+      "-Dscalapb.version=0.99.12",
+      "-DprotoCompat.version=" + version.value
+    ),
+    scriptedBufferLog := false
   )
