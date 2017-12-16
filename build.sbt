@@ -15,8 +15,11 @@ lazy val `proto-compat-directives` = crossProject
     libraryDependencies ++= Seq(
       "com.trueaccord.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
     ),
+    unmanagedResourceDirectories in Compile += {
+      baseDirectory.value.getParentFile / "src" / "main" / "protobuf"
+    },
     PB.protoSources in Compile := Seq(
-      (baseDirectory in Compile).value.getParentFile / "src" / "main" / "protobuf"
+      baseDirectory.value.getParentFile / "src" / "main" / "protobuf"
     ),
     PB.targets in Compile := Seq(
       protocbridge.gens.java -> (sourceManaged in Compile).value
