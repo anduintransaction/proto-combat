@@ -2,17 +2,16 @@ import scala.util.control.NoStackTrace
 
 import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
+import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+
+lazy val runScriptedTests = taskKey[Unit]("Run all scripted tests.")
 
 inThisBuild(
   Seq(
     organization := "com.anduintransact",
     scalaVersion := "2.12.4",
-    publishTo := Some(
-      Resolver.url(
-        "Anduin Transactions Artifactory",
-        url("https://artifactory.anduintransact.com/artifactory/anduin-internal-libraries/")
-      )(Resolver.ivyStylePatterns)
-    ),
+    // https://github.com/sbt/sbt/issues/3570
+    updateOptions := updateOptions.value.withGigahorse(false),
     credentials += {
       val username = System.getenv("ANDUIN_ARTIFACTORY_USERNAME")
       val password = System.getenv("ANDUIN_ARTIFACTORY_PASSWORD")
@@ -32,6 +31,12 @@ inThisBuild(
         password
       )
     },
+    publishTo := Some(
+      Resolver.url(
+        "Anduin Transactions Artifactory",
+        url("https://artifactory.anduintransact.com/artifactory/anduin-internal-libraries/")
+      )(Resolver.ivyStylePatterns)
+    ),
     publishMavenStyle := false
   )
 )
@@ -85,6 +90,7 @@ lazy val `sbt-proto-compat` = project
         (scalaBinaryVersion in pluginCrossBuild).value
       )
     ),
+    runScriptedTests := scripted.toTask("").value,
     publishLocal := publishLocal
       .dependsOn(
         // Hacky, why does this project have to know all transitive dependencies?
@@ -106,8 +112,24 @@ lazy val `proto-compat` = project
     `proto-compat-directivesJVM`,
     `proto-compat-directivesJS`,
     `proto-compat-core`,
-    `sbt-proto-compat`,
+    `sbt-proto-compat`
   )
   .settings(
-    publishArtifact := false
+    publish := {},
+    publishLocal := {},
+    publishArtifact := false,
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      releaseStepTaskAggregated(runScriptedTests),
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      publishArtifacts,
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
+    )
   )
