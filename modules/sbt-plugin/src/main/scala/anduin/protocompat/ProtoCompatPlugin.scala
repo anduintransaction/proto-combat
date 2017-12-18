@@ -1,5 +1,7 @@
 package anduin.protocompat
 
+import scala.util.control.NoStackTrace
+
 import sbt.Keys._
 import sbt._
 import sbtprotoc.ProtocPlugin
@@ -52,6 +54,10 @@ object ProtoCompatPlugin extends AutoPlugin {
   }
 
   import autoImport._
+
+  final class CheckFailedException(message: String) extends NoStackTrace {
+    override def getMessage: String = message
+  }
 
   private lazy val projectDefaultSettings: Seq[Def.Setting[_]] = Seq(
     )
@@ -106,7 +112,7 @@ object ProtoCompatPlugin extends AutoPlugin {
           reporter.report(result)
 
           if (result.incompats.nonEmpty) {
-            sys.error("Old and new protos are incompatible.")
+            throw new CheckFailedException("Old and new protos are incompatible.")
           }
         }
       )

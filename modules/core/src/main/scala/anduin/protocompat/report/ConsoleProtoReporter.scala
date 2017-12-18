@@ -43,7 +43,7 @@ final class ConsoleProtoReporter(
   ): String = {
     val builder = StringBuilder.newBuilder
 
-    builder.append(s"${kind.capitalizeName} proto:$NewLine")
+    builder.append(s"* ${kind.capitalizeName} proto:$NewLine")
     builder.append(protoPath(path.name, kind, basePaths, tree))
     builder.append(NewLine)
 
@@ -111,14 +111,11 @@ final class ConsoleProtoReporter(
 
       // In most cases it's more natural to have old path coming first
       builder.append(fullPath(incompat.oldPath, ProtoKind.Old, result.oldBasePaths, result.oldTree))
-      builder.append(NewLine)
-
       builder.append(fullPath(incompat.newPath, ProtoKind.New, result.newBasePaths, result.newTree))
-      builder.append(NewLine)
-
       builder.append(NewLine)
     }
 
+    println()
     print(builder.result())
     Console.flush()
   }
