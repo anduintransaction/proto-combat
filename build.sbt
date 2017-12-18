@@ -66,7 +66,7 @@ lazy val `sbt-proto-compat` = project
       .value,
     scriptedLaunchOpts ++= Seq(
       "-Xmx1024M",
-      "-Dscalapb.version=0.99.12",
+      "-DscalapbCompiler.version=0.6.6",
       "-DprotoCompat.version=" + version.value
     ),
     scriptedBufferLog := false
