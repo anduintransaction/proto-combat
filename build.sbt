@@ -1,10 +1,38 @@
+import scala.util.control.NoStackTrace
+
 import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
 
 inThisBuild(
   Seq(
     organization := "com.anduintransact",
-    scalaVersion := "2.12.4"
+    scalaVersion := "2.12.4",
+    publishTo := Some(
+      Resolver.url(
+        "Anduin Transactions Artifactory",
+        url("https://artifactory.anduintransact.com/artifactory/anduin-internal-libraries/")
+      )(Resolver.ivyStylePatterns)
+    ),
+    credentials += {
+      val username = System.getenv("ANDUIN_ARTIFACTORY_USERNAME")
+      val password = System.getenv("ANDUIN_ARTIFACTORY_PASSWORD")
+
+      if (username == null) {
+        throw new RuntimeException("Please provide Artifactory username.") with NoStackTrace
+      }
+
+      if (password == null) {
+        throw new RuntimeException("Please provide Artifactory password.") with NoStackTrace
+      }
+
+      Credentials(
+        "Artifactory Realm",
+        "artifactory.anduintransact.com",
+        username,
+        password
+      )
+    },
+    publishMavenStyle := false
   )
 )
 
@@ -70,4 +98,16 @@ lazy val `sbt-proto-compat` = project
       "-DprotoCompat.version=" + version.value
     ),
     scriptedBufferLog := false
+  )
+
+lazy val `proto-compat` = project
+  .in(file("."))
+  .aggregate(
+    `proto-compat-directivesJVM`,
+    `proto-compat-directivesJS`,
+    `proto-compat-core`,
+    `sbt-proto-compat`,
+  )
+  .settings(
+    publishArtifact := false
   )
