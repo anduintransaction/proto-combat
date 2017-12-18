@@ -17,38 +17,31 @@ object ProtoCompatPlugin extends AutoPlugin {
 
   object autoImport {
 
-    val compatAggregatedPath = SettingKey[File](
-      "compat-aggregated-path",
+    val compatAggregatedPath = settingKey[File](
       "The path that contains proto files aggregated from all include paths."
     )
 
-    val compatAggregate = TaskKey[File](
-      "compat-aggregate",
+    val compatAggregate = taskKey[File](
       "Aggregate proto files from all include paths."
     )
 
-    val compatOldPath = SettingKey[File](
-      "compat-old-path",
+    val compatOldPath = settingKey[File](
       "The path that contains old proto files."
     )
 
-    val compatNewPath = SettingKey[File](
-      "compat-new-path",
+    val compatNewPath = settingKey[File](
       "The path that contains new proto files."
     )
 
-    val compatCheckRoots = SettingKey[Seq[String]](
-      "compat-check-roots",
+    val compatCheckRoots = settingKey[Seq[String]](
       "Root protos to check for compatibility."
     )
 
-    val compatCheckResult = TaskKey[ProtoCheckResult](
-      "compat-check-result",
+    val compatCheckResult = taskKey[ProtoCheckResult](
       "Check proto for compatibility and give result."
     )
 
-    val compatCheck = TaskKey[Unit](
-      "compat-check",
+    val compatCheck = taskKey[Unit](
       "Check proto for compatibility and report."
     )
   }
