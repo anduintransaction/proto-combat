@@ -25,23 +25,19 @@ object ProtoCompatPlugin extends AutoPlugin {
       "Aggregate proto files from all include paths."
     )
 
-    val compatOldPath = settingKey[File](
-      "The path that contains old proto files."
-    )
-
-    val compatNewPath = settingKey[File](
-      "The path that contains new proto files."
+    val compatAggregateTo = inputKey[File](
+      "Aggregate proto files from all include paths to the given path."
     )
 
     val compatCheckRoots = settingKey[Seq[String]](
       "Root protos to check for compatibility."
     )
 
-    val compatCheckResult = taskKey[ProtoCheckResult](
+    val compatCheckResult = inputKey[ProtoCheckResult](
       "Check proto for compatibility and give result."
     )
 
-    val compatCheck = taskKey[Unit](
+    val compatCheck = inputKey[Unit](
       "Check proto for compatibility and report."
     )
   }
@@ -55,38 +51,41 @@ object ProtoCompatPlugin extends AutoPlugin {
   private lazy val projectDefaultSettings: Seq[Def.Setting[_]] = Seq(
     )
 
+  private def aggregate(inputs: Seq[File], output: File): File = {
+    IO.createDirectory(output)
+
+    inputs.foreach { includePath =>
+      val protoFinder = PathFinder(includePath) ** "*.proto"
+      val fileMap = Path.rebase(includePath, output)
+      IO.copy(protoFinder.pair(fileMap))
+    }
+
+    output
+  }
+
   def projectScopeSettings(config: Configuration): Seq[Def.Setting[_]] = {
     inConfig(config)(
       Seq(
         compatAggregatedPath := resourceManaged.value / "protobuf",
         compatAggregate := {
-          val aggregatedPath = compatAggregatedPath.value
-
-          IO.createDirectory(aggregatedPath)
-
-          PB.includePaths.value.foreach { includePath =>
-            val protoFinder = PathFinder(includePath) ** "*.proto"
-            val fileMap = Path.rebase(includePath, aggregatedPath)
-            IO.copy(protoFinder.pair(fileMap))
-          }
-
-          aggregatedPath
+          PB.unpackDependencies.value
+          aggregate(PB.includePaths.value, compatAggregatedPath.value)
         },
-        compatAggregate := compatAggregate.dependsOn(PB.unpackDependencies).value,
+
+        compatAggregateTo := {
+          val Seq(path) = Def.spaceDelimited("path").parsed
+          PB.unpackDependencies.value
+          // TODO: Better argument parsing.
+          aggregate(PB.includePaths.value, new File(path))
+        },
+
         compatCheckResult := {
-          val oldPath = compatOldPath.?.value.getOrElse(
-            throw new IllegalArgumentException("Old proto path is not set.")
-          )
-
-          val newPath = compatNewPath.?.value.getOrElse(
-            throw new IllegalArgumentException("New proto path is not set.")
-          )
-
+          // TODO: Better argument parsing.
+          val Seq(oldPath, newPath) = Def.spaceDelimited("path").parsed.map(new File(_))
           val roots = compatCheckRoots.?.value.getOrElse(
-            throw new IllegalArgumentException("Proto roots are not set.")
+            throw new IllegalArgumentException("compatCheckRoots must be set.")
           )
 
-          // Use all proto files in include paths are sources for simplicity
           val oldSources = (PathFinder(oldPath) ** "*.proto").getPaths
           val newSources = (PathFinder(newPath) ** "*.proto").getPaths
 
@@ -98,8 +97,9 @@ object ProtoCompatPlugin extends AutoPlugin {
             roots = roots.toVector
           )
         },
+
         compatCheck := {
-          val result = compatCheckResult.value
+          val result = compatCheckResult.parsed.value
           val reporter = new ConsoleProtoReporter(showFullPath = true)
 
           reporter.report(result)
