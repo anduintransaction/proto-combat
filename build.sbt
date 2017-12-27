@@ -12,25 +12,6 @@ inThisBuild(
     scalaVersion := "2.12.4",
     // https://github.com/sbt/sbt/issues/3570
     updateOptions := updateOptions.value.withGigahorse(false),
-    credentials += {
-      val username = System.getenv("ANDUIN_ARTIFACTORY_USERNAME")
-      val password = System.getenv("ANDUIN_ARTIFACTORY_PASSWORD")
-
-      if (username == null) {
-        throw new RuntimeException("Please provide Artifactory username.") with NoStackTrace
-      }
-
-      if (password == null) {
-        throw new RuntimeException("Please provide Artifactory password.") with NoStackTrace
-      }
-
-      Credentials(
-        "Artifactory Realm",
-        "artifactory.anduintransact.com",
-        username,
-        password
-      )
-    },
     publishTo := Some(
       Resolver.url(
         "Anduin Transactions Artifactory",
