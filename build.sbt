@@ -1,5 +1,3 @@
-import scala.util.control.NoStackTrace
-
 import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
@@ -104,7 +102,7 @@ lazy val `proto-compat` = project
       inquireVersions,
       runClean,
       runTest,
-      releaseStepTaskAggregated(runScriptedTests),
+      releaseStepInputTask(scripted in `sbt-proto-compat`),
       setReleaseVersion,
       commitReleaseVersion,
       tagRelease,
