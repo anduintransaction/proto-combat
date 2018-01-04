@@ -2,7 +2,6 @@ package anduin.protocompat
 
 import scala.util.control.NoStackTrace
 
-import sbt.Keys._
 import sbt._
 import sbtprotoc.ProtocPlugin
 import sbtprotoc.ProtocPlugin.autoImport.PB
@@ -16,14 +15,6 @@ object ProtoCompatPlugin extends AutoPlugin {
   override lazy val requires: Plugins = ProtocPlugin
 
   object autoImport {
-
-    val compatAggregatedPath = settingKey[File](
-      "The path that contains proto files aggregated from all include paths."
-    )
-
-    val compatAggregate = taskKey[File](
-      "Aggregate proto files from all include paths."
-    )
 
     val compatAggregateTo = inputKey[File](
       "Aggregate proto files from all include paths to the given path."
@@ -66,14 +57,8 @@ object ProtoCompatPlugin extends AutoPlugin {
   def projectScopeSettings(config: Configuration): Seq[Def.Setting[_]] = {
     inConfig(config)(
       Seq(
-        compatAggregatedPath := resourceManaged.value / "protobuf",
-        compatAggregate := {
-          PB.unpackDependencies.value
-          aggregate(PB.includePaths.value, compatAggregatedPath.value)
-        },
-
         compatAggregateTo := {
-          val Seq(path) = Def.spaceDelimited("path").parsed
+          val Seq(path) = Def.spaceDelimited("<path>").parsed
           PB.unpackDependencies.value
           // TODO: Better argument parsing.
           aggregate(PB.includePaths.value, new File(path))
@@ -81,7 +66,7 @@ object ProtoCompatPlugin extends AutoPlugin {
 
         compatCheckResult := {
           // TODO: Better argument parsing.
-          val Seq(oldPath, newPath) = Def.spaceDelimited("path").parsed.map(new File(_))
+          val Seq(oldPath, newPath) = Def.spaceDelimited("<path>").parsed.map(new File(_))
           val roots = compatCheckRoots.?.value.getOrElse(
             throw new IllegalArgumentException("compatCheckRoots must be set.")
           )

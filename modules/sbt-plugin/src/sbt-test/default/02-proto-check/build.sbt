@@ -18,30 +18,19 @@ lazy val commonSettings = Seq(
 )
 
 lazy val `new` = project
-  .settings(
-    commonSettings,
-    inConfig(Compile)(
-      Seq(
-        compatOldPath := (compatAggregatedPath in Compile in old).value,
-        compatNewPath := compatAggregatedPath.value,
-        compatCheckRoots := Seq("example.Person"),
-        compatCheckResult := compatCheckResult
-          .dependsOn(
-            compatAggregate in Compile in old,
-            compatAggregate
-          )
-          .value
-      )
-    )
-  )
+  .settings(commonSettings)
   .enablePlugins(ProtoCompatPlugin)
 
 lazy val old = project
   .settings(commonSettings)
   .enablePlugins(ProtoCompatPlugin)
 
-TaskKey[Unit]("check") := {
-  val result = (compatCheckResult in Compile in `new`).value
+compatCheckRoots := Seq("example.Person")
+
+enablePlugins(ProtoCompatPlugin)
+
+InputKey[Unit]("check") := {
+  val result = (compatCheckResult in Compile).parsed.value
 
   def requireIncompat(
     newPath: ProtoCheckPath,

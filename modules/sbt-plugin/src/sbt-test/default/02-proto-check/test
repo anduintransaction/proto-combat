@@ -1,1 +1,3 @@
-> check
+> old/compatAggregateTo old-protos
+> new/compatAggregateTo new-protos
+> check old-protos new-protos

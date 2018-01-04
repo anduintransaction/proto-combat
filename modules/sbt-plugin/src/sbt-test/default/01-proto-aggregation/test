@@ -1,7 +1,7 @@
-> compatAggregate
+> compatAggregateTo protos
 
 # Project proto files must be aggregated
-$ exists target/scala-2.12/resource_managed/main/protobuf/example/example.proto
+$ exists protos/example/example.proto
 
 # Depedency proto files must be aggregated as well
-$ exists target/scala-2.12/resource_managed/main/protobuf/scalapb/scalapb.proto
+$ exists protos/scalapb/scalapb.proto

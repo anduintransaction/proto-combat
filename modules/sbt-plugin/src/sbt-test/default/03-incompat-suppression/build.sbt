@@ -22,24 +22,16 @@ lazy val commonSettings = Seq(
 )
 
 lazy val `new` = project
-  .settings(
-    commonSettings,
-    inConfig(Compile)(
-      Seq(
-        compatOldPath := (compatAggregatedPath in Compile in old).value,
-        compatNewPath := compatAggregatedPath.value,
-        compatCheckRoots := Seq("example.Person"),
-        compatCheckResult := compatCheckResult
-          .dependsOn(
-            compatAggregate in Compile in old,
-            compatAggregate
-          )
-          .value
-      )
-    )
-  )
+  .settings(commonSettings)
   .enablePlugins(ProtoCompatPlugin)
 
 lazy val old = project
   .settings(commonSettings)
   .enablePlugins(ProtoCompatPlugin)
+
+compatCheckRoots := Seq("example.Person")
+
+aggregate in compatCheck := false
+aggregate in compatCheckResult := false
+
+enablePlugins(ProtoCompatPlugin)

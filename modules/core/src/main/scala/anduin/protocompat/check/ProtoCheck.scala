@@ -19,7 +19,7 @@ object ProtoCheck {
     * @param protoPaths All proto paths.
     * @return A map from proto relative paths to their own base path.
     */
-  private def buildBasePaths(
+  private def basePaths(
     protoPaths: Vector[String]
   ): Map[String, String] = {
     protoPaths.foldMap { protoPath =>
@@ -48,7 +48,7 @@ object ProtoCheck {
     * @param protoSources Proto sources.
     * @return A proto tree.
     */
-  private def buildTree(
+  def tree(
     protoPaths: Vector[String],
     protoSources: Vector[String]
   ): ProtoTree = {
@@ -74,11 +74,11 @@ object ProtoCheck {
     oldProtoSources: Vector[String],
     roots: Vector[String]
   ): ProtoCheckResult = {
-    val newBasePaths = buildBasePaths(newProtoPaths)
-    val newTree = buildTree(newProtoPaths, newProtoSources)
+    val newBasePaths = basePaths(newProtoPaths)
+    val newTree = tree(newProtoPaths, newProtoSources)
 
-    val oldBasePaths = buildBasePaths(oldProtoPaths)
-    val oldTree = buildTree(oldProtoPaths, oldProtoSources)
+    val oldBasePaths = basePaths(oldProtoPaths)
+    val oldTree = tree(oldProtoPaths, oldProtoSources)
 
     val rootPairs = roots.map { root =>
       val parts = root.split(":", 2)
