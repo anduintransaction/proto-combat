@@ -33,9 +33,17 @@ object tree {
       }
 
     def findMessageAndFile(canonicalName: String): Option[(ProtoMessage, ProtoFile)] = {
-      flattenMessagesAndFile.collectFirst {
-        case (name, (message, file)) if name == canonicalName => (message, file)
-      }
+      flattenMessagesAndFile
+        .collectFirst {
+          case (name, (message, file)) if name == canonicalName =>
+            (message, file)
+        }
+        .orElse(
+          flattenMessagesAndFile.collectFirst {
+            case (name, (message, file)) if name.split('.').last == canonicalName =>
+              (message, file)
+          }
+        )
     }
 
     def findMessage(canonicalName: String): Option[ProtoMessage] = {
@@ -48,9 +56,17 @@ object tree {
       }
 
     def findEnumAndFile(canonicalName: String): Option[(ProtoEnum, ProtoFile)] = {
-      flattenEnumsAndFile.collectFirst {
-        case (name, (enum, file)) if name == canonicalName => (enum, file)
-      }
+      flattenEnumsAndFile
+        .collectFirst {
+          case (name, (enum, file)) if name == canonicalName =>
+            (enum, file)
+        }
+        .orElse(
+          flattenEnumsAndFile.collectFirst {
+            case (name, (enum, file)) if name.split('.').last == canonicalName =>
+              (enum, file)
+          }
+        )
     }
 
     def findEnum(canonicalName: String): Option[ProtoEnum] = {
