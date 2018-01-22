@@ -256,18 +256,16 @@ private[check] object ProtoCheckInternals {
 
     roots.flatMap {
       case (newName, oldName) =>
-        val optionalNewProto = newTree.findProto(newName)
-        require(optionalNewProto.isDefined, s"New proto with name $newName doesn't exist.")
-        val newProto = optionalNewProto.get
+        val optionalIncompats = for {
+          newProto <- newTree.findProto(newName)
+          oldProto <- oldTree.findProto(oldName)
+        } yield {
+          val newPath = ProtoCheckPath(Vector.empty, newName)
+          val oldPath = ProtoCheckPath(Vector.empty, oldName)
+          checkProto(newTree, newPath, newProto, oldTree, oldPath, oldProto, callStack)
+        }
 
-        val optionalOldProto = oldTree.findProto(oldName)
-        require(optionalOldProto.isDefined, s"Old proto with name $oldName doesn't exist.")
-        val oldProto = optionalOldProto.get
-
-        val newPath = ProtoCheckPath(Vector.empty, newName)
-        val oldPath = ProtoCheckPath(Vector.empty, oldName)
-
-        checkProto(newTree, newPath, newProto, oldTree, oldPath, oldProto, callStack)
+        optionalIncompats.getOrElse(Vector.empty)
     }
   }
 }
