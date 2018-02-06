@@ -34,7 +34,11 @@ lazy val `proto-compat-directives` = crossProject
       baseDirectory.value.getParentFile / "src" / "main" / "protobuf"
     ),
     PB.targets in Compile := Seq(
-      protocbridge.gens.java -> (sourceManaged in Compile).value
+      protocbridge.gens.java -> (sourceManaged in Compile).value,
+      scalapb.gen(
+        flatPackage = true,
+        grpc = false
+      ) -> (sourceManaged in Compile).value
     )
   )
 
