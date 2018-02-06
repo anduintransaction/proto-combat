@@ -50,10 +50,10 @@ lazy val `proto-compat-core` = project
   .dependsOn(`proto-compat-directivesJVM`)
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "1.0.0-RC1",
-      "com.google.protobuf" % "protobuf-java" % "3.5.0",
+      "org.typelevel" %% "cats-core" % "1.0.1",
+      "com.google.protobuf" % "protobuf-java" % "3.5.1",
       "com.trueaccord.scalapb" %% "protoc-bridge" % "0.3.0-M1",
-      "com.github.os72" % "protoc-jar" % "3.5.0",
+      "com.github.os72" % "protoc-jar" % "3.5.1.1",
       "com.trueaccord.scalapb" %% "scalapb-runtime" % "0.6.7" excludeAll (
         "com.google.protobuf" % "protobuf-java"
       )
@@ -68,7 +68,7 @@ lazy val `sbt-proto-compat` = project
     sbtPlugin := true,
     libraryDependencies ++= Seq(
       Defaults.sbtPluginExtra(
-        "com.thesamet" % "sbt-protoc" % "0.99.12",
+        "com.thesamet" % "sbt-protoc" % "0.99.14",
         (sbtBinaryVersion in pluginCrossBuild).value,
         (scalaBinaryVersion in pluginCrossBuild).value
       )
