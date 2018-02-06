@@ -1,4 +1,4 @@
-import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
+import scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
@@ -25,7 +25,7 @@ lazy val `proto-compat-directives` = crossProject
   .in(file("modules") / "directives")
   .settings(
     libraryDependencies ++= Seq(
-      "com.trueaccord.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
+      "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
     ),
     unmanagedResourceDirectories in Compile += {
       baseDirectory.value.getParentFile / "src" / "main" / "protobuf"
@@ -54,7 +54,7 @@ lazy val `proto-compat-core` = project
       "com.google.protobuf" % "protobuf-java" % "3.5.1",
       "com.trueaccord.scalapb" %% "protoc-bridge" % "0.3.0-M1",
       "com.github.os72" % "protoc-jar" % "3.5.1.1",
-      "com.trueaccord.scalapb" %% "scalapb-runtime" % "0.6.7" excludeAll (
+      "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion excludeAll (
         "com.google.protobuf" % "protobuf-java"
       )
     ),
@@ -83,7 +83,7 @@ lazy val `sbt-proto-compat` = project
       .value,
     scriptedLaunchOpts ++= Seq(
       "-Xmx1024M",
-      "-DscalapbCompiler.version=0.6.6",
+      "-DscalapbCompiler.version=0.7.0-rc7",
       "-DprotoCompat.version=" + version.value
     ),
     scriptedBufferLog := false

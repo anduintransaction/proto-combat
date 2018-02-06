@@ -4,7 +4,7 @@ import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   libraryDependencies ++= Seq(
-    "com.trueaccord.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
+    "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
   ),
   PB.targets in Compile := Seq(
     scalapb.gen(

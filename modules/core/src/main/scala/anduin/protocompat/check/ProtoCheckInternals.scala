@@ -2,12 +2,12 @@ package anduin.protocompat.check
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scalapb.options.Scalapb
 
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.{Type => FieldType}
 import com.google.protobuf.DescriptorProtos.{DescriptorProto, FieldDescriptorProto, FieldOptions}
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.GeneratedMessage.GeneratedExtension
-import com.trueaccord.scalapb.Scalapb
 
 import anduin.protocompat.Compat
 import anduin.protocompat.tree.{ProtoEnum, ProtoMessage, ProtoTree}

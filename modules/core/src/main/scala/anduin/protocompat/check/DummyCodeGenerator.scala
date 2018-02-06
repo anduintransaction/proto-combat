@@ -1,8 +1,9 @@
 package anduin.protocompat.check
 
+import scalapb.options.Scalapb
+
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.compiler.PluginProtos.{CodeGeneratorRequest, CodeGeneratorResponse}
-import com.trueaccord.scalapb.Scalapb
 import protocbridge.ProtocCodeGenerator
 
 /** A Protocol Buffers code generator that does nothing

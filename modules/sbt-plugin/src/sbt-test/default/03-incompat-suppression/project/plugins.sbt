@@ -7,5 +7,5 @@
 {
   lazy val scalapbCompilerVersion = System.getProperty("scalapbCompiler.version")
   require(scalapbCompilerVersion != null, "ScalaPB version is not specified.")
-  libraryDependencies += "com.trueaccord.scalapb" %% "compilerplugin" % scalapbCompilerVersion
+  libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % scalapbCompilerVersion
 }
