@@ -8,6 +8,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
     ),
+    PB.protocVersion := "-v351",
     PB.targets in Compile := Seq(
       scalapb.gen(
         flatPackage = true,
