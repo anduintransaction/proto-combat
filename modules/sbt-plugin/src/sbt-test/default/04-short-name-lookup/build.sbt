@@ -1,5 +1,5 @@
-import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
+import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",

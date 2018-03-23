@@ -1,6 +1,6 @@
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.{Type => FieldType}
-import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
+import scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 
 import anduin.protocompat.check._
 

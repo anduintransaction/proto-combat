@@ -1,5 +1,5 @@
-import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
+import scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 
 lazy val ProtoCompatVersion = {
   val version = System.getProperty("protoCompat.version")
