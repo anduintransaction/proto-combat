@@ -136,68 +136,68 @@ private[check] object ProtoCheckInternals {
           val newType = newField.getType
           val oldType = oldField.getType
 
-          if (newType == FieldType.TYPE_MESSAGE && oldType == FieldType.TYPE_MESSAGE) {
-            // New
-            val nextNewName = newField.getTypeName.drop(1) // drop the leading dot
-            val optionalNextNewMessage = newTree.findMessage(nextNewName)
+          val fieldOptions = FieldOptions
+            .parseFrom(newField.getOptions.toByteArray, extensionRegistry)
+            .getExtension(Compat.field: GeneratedExtension[FieldOptions, Compat.FieldOptions])
 
-            require(
-              optionalNextNewMessage.isDefined,
-              s"New message with name $nextNewName doesn't exist."
-            )
+          if (!fieldOptions.getIgnored) {
+            if (newType == FieldType.TYPE_MESSAGE && oldType == FieldType.TYPE_MESSAGE) {
+              // New
+              val nextNewName = newField.getTypeName.drop(1) // drop the leading dot
+              val optionalNextNewMessage = newTree.findMessage(nextNewName)
 
-            // Old
-            val nextOldName = oldField.getTypeName.drop(1) // drop the leading dot
-            val optionalNextOldMessage = oldTree.findMessage(nextOldName)
+              require(
+                optionalNextNewMessage.isDefined,
+                s"New message with name $nextNewName doesn't exist."
+              )
 
-            require(
-              optionalNextOldMessage.isDefined,
-              s"Old message with name $nextOldName doesn't exist."
-            )
+              // Old
+              val nextOldName = oldField.getTypeName.drop(1) // drop the leading dot
+              val optionalNextOldMessage = oldTree.findMessage(nextOldName)
 
-            incompats ++= checkMessage(
-              newTree,
-              newPath.goDeeper(newField.getNumber, nextNewName),
-              optionalNextNewMessage.get,
-              oldTree,
-              oldPath.goDeeper(oldField.getNumber, nextOldName),
-              optionalNextOldMessage.get,
-              callStack
-            )
-          } else if (newType == oldType) {
-            val newScalaType = scalaFieldType(newField)
-            val oldScalaType = scalaFieldType(oldField)
+              require(
+                optionalNextOldMessage.isDefined,
+                s"Old message with name $nextOldName doesn't exist."
+              )
 
-            if (newScalaType != oldScalaType) {
+              incompats ++= checkMessage(
+                newTree,
+                newPath.goDeeper(newField.getNumber, nextNewName),
+                optionalNextNewMessage.get,
+                oldTree,
+                oldPath.goDeeper(oldField.getNumber, nextOldName),
+                optionalNextOldMessage.get,
+                callStack
+              )
+            } else if (newType == oldType) {
+              val newScalaType = scalaFieldType(newField)
+              val oldScalaType = scalaFieldType(oldField)
+
+              if (newScalaType != oldScalaType) {
+                incompats += incompat(
+                  ScalaFieldTypeConflicted(
+                    newField.getNumber,
+                    newField.getName,
+                    newScalaType,
+                    oldField.getName,
+                    oldScalaType
+                  )
+                )
+              }
+            } else if (!isTypeCompatible(newType, oldType)) {
               incompats += incompat(
-                ScalaFieldTypeConflicted(
+                FieldTypeConflicted(
                   newField.getNumber,
                   newField.getName,
-                  newScalaType,
+                  newField.getType,
                   oldField.getName,
-                  oldScalaType
+                  oldField.getType
                 )
               )
             }
-          } else if (!isTypeCompatible(newType, oldType)) {
-            incompats += incompat(
-              FieldTypeConflicted(
-                newField.getNumber,
-                newField.getName,
-                newField.getType,
-                oldField.getName,
-                oldField.getType
-              )
-            )
-          }
 
-          if (newField.getName != oldField.getName) {
-            val fieldOptions = FieldOptions
-              .parseFrom(newField.getOptions.toByteArray, extensionRegistry)
-              .getExtension(Compat.field: GeneratedExtension[FieldOptions, Compat.FieldOptions])
-
-            // Field renamed without any suppression
-            if (fieldOptions.getRenamedFrom != oldField.getName) {
+            if (newField.getName != oldField.getName && fieldOptions.getRenamedFrom != oldField.getName) {
+              // Field renamed without any suppression
               incompats += incompat(
                 FieldRenamed(
                   newField.getNumber,

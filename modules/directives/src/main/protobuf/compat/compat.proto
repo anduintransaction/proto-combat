@@ -8,6 +8,7 @@ option java_package = "anduin.protocompat";
 
 message FieldOptions {
   string renamed_from = 1;
+  bool ignored = 2;
 }
 
 extend google.protobuf.FieldOptions {

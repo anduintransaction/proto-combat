@@ -6,4 +6,5 @@ import "compat/compat.proto";
 
 message Person {
   string full_name = 1 [(compat.field).renamed_from = "name"];
+  int32 age = 2 [(compat.field).ignored = true];
 }
