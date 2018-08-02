@@ -1,0 +1,9 @@
+[repositories]
+  local
+  maven-local
+  anduin-plugins-maven: https://artifactory.anduin.co/artifactory/anduin-plugins-maven/
+  anduin-plugins-ivy: https://artifactory.anduin.co/artifactory/anduin-plugins-ivy/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+  anduin-maven-proxy: https://artifactory.anduin.co/artifactory/stargazer-maven-default/
+  anduin-ivy-proxy: https://artifactory.anduin.co/artifactory/stargazer-ivy-default/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+  anduin-internal-libraries: https://artifactory.anduin.co/artifactory/anduin-internal-libraries/, [organization]/[module]/(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[revision]/[type]s/[artifact](-[classifier]).[ext]
+  

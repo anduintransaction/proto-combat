@@ -1,0 +1,3 @@
+-Dsbt.repository.config=./project/repositories
+-Dsbt.boot.credentials=./project/credentials
+-Dsbt.server.autostart=false

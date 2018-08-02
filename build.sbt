@@ -15,7 +15,7 @@ inThisBuild(
     publishTo := Some(
       Resolver.url(
         "Anduin Transactions Artifactory",
-        url("https://artifactory.anduintransact.com/artifactory/anduin-internal-libraries/")
+        url("https://artifactory.anduin.co/artifactory/anduin-internal-libraries/")
       )(Resolver.ivyStylePatterns)
     ),
     publishMavenStyle := false
