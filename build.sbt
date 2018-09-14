@@ -1,15 +1,16 @@
 import scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-lazy val ProtobufJavaVersion = "3.5.1"
+lazy val ProtobufJavaVersion = "3.6.0"
 
 lazy val runScriptedTests = taskKey[Unit]("Run all scripted tests.")
 
 inThisBuild(
   Seq(
     organization := "com.anduintransact",
-    scalaVersion := "2.12.4",
+    scalaVersion := "2.12.6",
     // https://github.com/sbt/sbt/issues/3570
     updateOptions := updateOptions.value.withGigahorse(false),
     publishTo := Some(
@@ -22,8 +23,7 @@ inThisBuild(
   )
 )
 
-lazy val `proto-compat-directives` = crossProject
-  .crossType(CrossType.Pure)
+lazy val `proto-compat-directives` = crossProject(JSPlatform, JVMPlatform)
   .in(file("modules") / "directives")
   .settings(
     libraryDependencies ++= Seq(
@@ -44,7 +44,7 @@ lazy val `proto-compat-directives` = crossProject
     PB.protoSources in Compile := Seq(
       baseDirectory.value.getParentFile / "src" / "main" / "protobuf"
     ),
-    PB.protocVersion := "-v351",
+    PB.protocVersion := "-v360",
     PB.targets in Compile := Seq(
       protocbridge.gens.java -> (sourceManaged in Compile).value,
       scalapb.gen(
@@ -62,10 +62,10 @@ lazy val `proto-compat-core` = project
   .dependsOn(`proto-compat-directivesJVM`)
   .settings(
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "1.0.1",
+      "org.typelevel" %% "cats-core" % "1.4.0",
       "com.google.protobuf" % "protobuf-java" % ProtobufJavaVersion,
-      "com.trueaccord.scalapb" %% "protoc-bridge" % "0.3.0-M1",
-      "com.github.os72" % "protoc-jar" % "3.5.1.1",
+      "com.thesamet.scalapb" %% "protoc-bridge" % "0.7.3",
+      "com.github.os72" % "protoc-jar" % "3.6.0",
       "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion excludeAll (
         "com.google.protobuf" % "protobuf-java"
       )
@@ -76,11 +76,12 @@ lazy val `proto-compat-core` = project
 lazy val `sbt-proto-compat` = project
   .in(file("modules") / "sbt-plugin")
   .dependsOn(`proto-compat-core`)
+  .enablePlugins(SbtPlugin)
   .settings(
     sbtPlugin := true,
     libraryDependencies ++= Seq(
       Defaults.sbtPluginExtra(
-        "com.thesamet" % "sbt-protoc" % "0.99.13",
+        "com.thesamet" % "sbt-protoc" % "0.99.18",
         (sbtBinaryVersion in pluginCrossBuild).value,
         (scalaBinaryVersion in pluginCrossBuild).value
       )

@@ -1,12 +1,12 @@
 import sbtprotoc.ProtocPlugin.{ProtobufConfig => Protobuf}
-import com.trueaccord.scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
+import scalapb.compiler.Version.{scalapbVersion => ScalapbVersion}
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.6",
   libraryDependencies ++= Seq(
     "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf
   ),
-  PB.protocVersion := "-v351",
+  PB.protocVersion := "-v360",
   PB.targets in Compile := Seq(
     scalapb.gen(
       flatPackage = true,

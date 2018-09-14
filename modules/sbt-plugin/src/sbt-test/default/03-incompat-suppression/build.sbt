@@ -8,12 +8,12 @@ lazy val ProtoCompatVersion = {
 }
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.6",
   libraryDependencies ++= Seq(
     "com.thesamet.scalapb" %% "scalapb-runtime" % ScalapbVersion % Protobuf,
     "com.anduintransact" %% "proto-compat-directives" % ProtoCompatVersion % Protobuf
   ),
-  PB.protocVersion := "-v351",
+  PB.protocVersion := "-v360",
   PB.targets in Compile := Seq(
     scalapb.gen(
       flatPackage = true,
